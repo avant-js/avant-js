@@ -51,6 +51,9 @@ module.exports = {
                 console.log(parameters);
                 console.log(node.output);
            }
+           else{
+               console.log(node);
+           }
         });
         
         /*

@@ -749,5 +749,40 @@
             "createfail": "failed to create file: __error__"
         },
         "tip": "Tip: You should fully path the Filename."
+    },
+    "mongodb": {
+        "label": {
+            "host": "Host",
+            "port": "Port",
+            "database": "Database",
+            "username": "Username",
+            "password": "Password",
+            "server": "Server",
+            "collection": "Collection",
+            "operation": "Operation",
+            "onlystore": "Only store msg.payload object",
+            "createnew": "Create a new document if no match found",
+            "updateall": "Update all matching documents"
+        },
+        "operation": {
+            "save": "save",
+            "insert": "insert",
+            "update": "update",
+            "remove": "remove",
+            "find": "find",
+            "findById": "findById",
+            "count": "count",
+            "aggregate": "aggregate"
+        },
+        "status": {
+            "connecting": "connecting",
+            "connected": "connected",
+            "error": "error"
+        },
+        "tip": "<b> Tip:</b> If no collection is set, ensure <code>msg.collection</code> will contain the collection name",
+        "errors": {
+            "nocollection": "No collection defined",
+            "missingconfig": "missing mongodb configuration"
+        }
     }
 }
