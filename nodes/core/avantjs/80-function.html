@@ -12,6 +12,8 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+
+  MODIFIED by Matheus Webler, 2017.
 -->
 
 <script type="text/x-red" data-template-name="function">
@@ -28,42 +30,17 @@
         <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor" ></div>
     </div>
     <div class="form-row">
-        <label for="node-input-outputs"><i class="fa fa-random"></i> <span data-i18n="function.label.outputs"></span></label>
-        <input id="node-input-outputs" style="width: 60px;" value="1">
+        <label for="node-input-output"><i class="fa fa-tag"></i>Output</label>
+        <input type="text" id="node-input-output">
     </div>
     <div class="form-tips"><span data-i18n="function.tip"></span></div>
 </script>
 
 <script type="text/x-red" data-help-name="function">
     <p>A function block where you can write code to do more interesting things.</p>
-    <p>The message is passed in as a JavaScript object called <code>msg</code>.</p>
-    <p>By convention it will have a <code>msg.payload</code> property containing
-       the body of the message.</p>
-    <h4>Logging and Error Handling</h4>
-    <p>To log any information, or report an error, the following functions are available:</p>
-        <ul>
-            <li><code>node.log("Log")</code></li>
-            <li><code>node.warn("Warning")</code></li>
-            <li><code>node.error("Error")</code></li>
-        </ul>
-    </p>
-    <p>The Catch node can also be used to handle errors. To invoke a Catch node,
-    pass <code>msg</code> as a second argument to <code>node.error</code>:</p>
-    <pre>node.error("Error",msg)</pre>
-    <h4>Sending messages</h4>
-    <p>The function can either return the messages it wants to pass on to the next nodes
-    in the flow, or can call <code>node.send(messages)</code>.</p>
-    <p>It can return/send:</p>
-    <ul>
-      <li>a single message object - passed to nodes connected to the first output</li>
-      <li>an array of message objects - passed to nodes connected to the corresponding outputs</li>
-    </ul>
-    <p>If any element of the array is itself an array of messages, multiple
-          messages are sent to the corresponding output.</p>
-    <p>If null is returned, either by itself or as an element of the array, no
-          message is passed on.</p>
-    <p>See the <a target="_blank" href="http://nodered.org/docs/writing-functions.html">online documentation</a> for more help.</p>
-
+    <p>The function will receive the configured parameters from the previous node.</p>
+    <p>The input parameters must be declared in function name just like a javascript function <code>function myFunc (arg1, arg2)</code></p>
+    <p>It must return/send a Promise.resolve() object with the return value.</p>
 </script>
 
 <script type="text/javascript">
@@ -71,9 +48,9 @@
         color:"#fdd0a2",
         category: 'function',
         defaults: {
-            name: {value:""},
-            func: {value:"\nreturn msg;"},
-            outputs: {value:1},
+            name: {value:"newFunction()"},
+            output: {value: 'returnObj'},
+            func: {value:"\nPromise.resolve(true)"},
             noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
         },
         inputs:1,
@@ -84,10 +61,6 @@
         },
         oneditprepare: function() {
             var that = this;
-            $( "#node-input-outputs" ).spinner({
-                min:1
-            });
-
             this.editor = RED.editor.createEditor({
                 id: 'node-input-func-editor',
                 mode: 'ace/mode/javascript',
@@ -113,7 +86,7 @@
                 type:"function", // the type of object the library is for
                 editor:this.editor, // the field name the main text body goes to
                 mode:"ace/mode/javascript",
-                fields:['name','outputs']
+                fields:['name', 'output']
             });
             this.editor.focus();
         },
