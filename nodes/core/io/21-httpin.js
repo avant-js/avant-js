@@ -178,7 +178,7 @@ module.exports = function(RED) {
             this.url = n.url;
             this.method = n.method;
             this.swaggerDoc = n.swaggerDoc;
-
+            this.primary = true;
             var node = this;
 
             this.errorHandler = function(err,req,res,next) {

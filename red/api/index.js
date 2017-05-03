@@ -36,6 +36,9 @@ var comms = require("./comms");
 var auth = require("./auth");
 var needsPermission = auth.needsPermission;
 
+//Matheus Webler edit
+var generate = require('./generate');
+
 var i18n;
 var log;
 var adminApp;
@@ -78,6 +81,9 @@ function init(_server,_runtime) {
         library.init(adminApp,runtime);
         locales.init(runtime);
         nodes.init(runtime);
+
+        //Matheus Webler edit
+        generate.init(runtime);
 
         // Editor
         if (!settings.disableEditor) {
@@ -158,6 +164,9 @@ function init(_server,_runtime) {
 
         // Error Handler
         //adminApp.use(errorHandler);
+
+        //Matheus Webler edit
+        adminApp.post("/generate",needsPermission("flows.write"),generate.post,errorHandler);
     }
 }
 function start() {

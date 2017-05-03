@@ -16,6 +16,21 @@
 
 RED.deploy = (function() {
 
+    //Matheus Webler edit
+    function generateCode(){
+        var nns = RED.nodes.createCompleteNodeSet();
+        var data = {flows:nns};
+        $.ajax({
+                url:"generate",
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                headers: {
+                    "Node-RED-Deployment-Type":deploymentType
+                }
+            });
+    }
+
     var deploymentTypes = {
         "full":{img:"red/images/deploy-full-o.png"},
         "nodes":{img:"red/images/deploy-nodes-o.png"},
@@ -68,6 +83,16 @@ RED.deploy = (function() {
                       {id:"deploymenu-item-node",toggle:"deploy-type",icon:"red/images/deploy-nodes.png",label:RED._("deploy.modifiedNodes"),sublabel:RED._("deploy.modifiedNodesDesc"),onselect:function(s) { if(s){changeDeploymentType("nodes")}}}
                   ]
               });
+
+              //Matheus Webler edit
+              $('<li>'+
+              '<a id="btn-generate" class="deploy-button disabled" href="#">'+
+                '<span class="deploy-button-content">'+
+                 '<img id="btn-deploy-icon" src="red/images/deploy-full-o.png"> '+
+                 '<span>'+RED._("deploy.generate")+'</span>'+
+                '</span>'+
+              '</a>'+
+              '</li>').prependTo(".header-toolbar");
         } else if (type == "simple") {
             var label = options.label || RED._("deploy.deploy");
             var icon = 'red/images/deploy-full-o.png';
@@ -91,6 +116,10 @@ RED.deploy = (function() {
         $('#btn-deploy').click(function() { save(); });
 
         RED.actions.add("core:deploy-flows",save);
+
+        //Matheus Webler edit
+        $('#btn-generate').click(function() { generateCode(); });
+        RED.actions.add("core:generate-flows",generateCode);
 
         $( "#node-dialog-confirm-deploy" ).dialog({
                 title: RED._('deploy.confirm.button.confirm'),
