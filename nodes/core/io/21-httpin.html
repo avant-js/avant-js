@@ -33,6 +33,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
     </div>
+    <div class="form-row">
+        <label for="node-input-output"><i class="fa fa-arrow-left"></i> <span>Output</span></label>
+        <input type="text" id="node-input-output" data-i18n="[placeholder]common.label.name" readonly>
+    </div>
     <div class="form-row row-swagger-doc">
         <label for="node-input-swaggerDoc"><i class="fa fa-file-text-o"></i> <span data-i18n="httpin.label.doc"></span></label>
         <input type="text" id="node-input-swaggerDoc">
@@ -120,7 +124,8 @@ msg.cookies = {
             url: {value:"",required:true},
             method: {value:"get",required:true},
             swaggerDoc: {type:"swagger-doc", required:false},
-            primary: {value: true, required:true}
+            primary: {value: true, required:true},
+            output: {value: "req"}
         },
         inputs:0,
         outputs:1,
