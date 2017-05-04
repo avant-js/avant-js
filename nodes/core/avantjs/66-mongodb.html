@@ -44,24 +44,25 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="mongodbmodel">
+<script type="text/x-red" data-template-name="collection">
     <div class="form-row">
         <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
         <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
     </div>
 
     <div class="form-row node-config-input-modeldata-container-row">
+        <label for="node-config-input-modeldata-container"><i class="fa fa-table"></i> <span>Schema</span></label>
         <ol id="node-config-input-modeldata-container"></ol>
     </div>
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('mongodbmodel', {
+    RED.nodes.registerType('collection', {
         category: 'config',
         color: "rgb(218, 196, 180)",
         defaults: {
             name: {value: ""},
-            properties: {value: [{t:'String', v: 'uepa'}]},
+            properties: {value: []},
         },
         label: function() {
             return this.name;
@@ -95,7 +96,7 @@
                     
                     var row = $('<div/>').appendTo(container);
                     var valueField = $('<input/>',{class:"node-input-model-value",type:"text",style:"margin-left: 5px;"}).appendTo(row);
-                    var selectField = $('<select/>',{style:"width:120px; margin-left: 5px; text-align: center;"}).appendTo(row);
+                    var selectField = $('<select/>',{style:"width:80px; margin-left: 5px; text-align: center;"}).appendTo(row);
                     for (var d in datatypes) {
                         selectField.append($("<option></option>").val(datatypes[d].d).text(datatypes[d].t));
                     }
@@ -144,12 +145,8 @@
 
 <script type="text/x-red" data-template-name="mongodb out">
     <div class="form-row">
-        <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
+        <label for="node-input-mongodb"><i class="fa fa-database"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
-    </div>
-    <div class="form-row">
-        <label for="node-input-mongodbmodel"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.collection"></span></label>
-        <input type="text" id="node-input-mongodbmodel">
     </div>
     <div class="form-row">
         <label for="node-input-collection"><i class="fa fa-briefcase"></i> <span data-i18n="mongodb.label.collection"></span></label>
@@ -264,7 +261,7 @@
         color: "rgb(218, 196, 180)",
         defaults: {
             mongodb: {type: "mongodb", required: true},
-            mongodbmodel: {type: "mongodbmodel", required: true},
+            collection: {type: "collection", required: true},
             name: {value: ""},
             upsert: {value: false},
             multi: {value: false},
@@ -291,7 +288,7 @@
 
 <script type="text/x-red" data-template-name="mongodb in">
     <div class="form-row">
-        <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
+        <label for="node-input-mongodb"><i class="fa fa-database"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
     </div>
     <div class="form-row">
@@ -348,7 +345,8 @@
             collection: {value: ""},
             operation: {value: "find"},
             query: {value: "{_id: req.params.id}"},
-            output: {value: ""}
+            output: {value: ""},
+            collection: {type: "collection", required: true},
         },
         inputs: 1,
         outputs: 1,
