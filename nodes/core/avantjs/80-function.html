@@ -50,6 +50,9 @@
         defaults: {
             name: {value:"newFunction()"},
             output: {value: 'returnObj'},
+            outputLabels: function(index) {
+                return this.output;
+            },
             func: {value:"\nPromise.resolve(true)"},
             noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
         },

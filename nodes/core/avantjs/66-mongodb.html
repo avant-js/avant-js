@@ -267,7 +267,10 @@
             operation: {value: "store"},
             query: {value: "{_id: req.params.id}"},
             data: {value: "req.payload"},
-            output: {value: ""}
+            output: {value: ""},
+            outputLabels: function(index) {
+                return this.output;
+            }
         },
         inputs: 1,
         outputs: 1,
@@ -346,6 +349,9 @@
             query: {value: "{_id: req.params.id}"},
             output: {value: ""},
             collection: {type: "collection", required: true},
+            outputLabels: function(index) {
+                return this.output;
+            }
         },
         inputs: 1,
         outputs: 1,

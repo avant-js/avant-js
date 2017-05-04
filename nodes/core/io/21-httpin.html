@@ -130,6 +130,9 @@ msg.cookies = {
         inputs:0,
         outputs:1,
         icon: "white-globe.png",
+        outputLabels: function(index) {
+            return this.output;
+        },
         label: function() {
             if (this.name) {
                 return this.name;
