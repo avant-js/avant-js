@@ -61,7 +61,7 @@
         category: 'config',
         color: "rgb(218, 196, 180)",
         defaults: {
-            name: {value: ""},
+            name: {value: "", required: true},
             properties: {value: []},
         },
         label: function() {
@@ -79,7 +79,7 @@
                 {d: "[]", t: "Array"}
             ]
 
-            $('#node-config-input-modeldata-container').css('min-height','300px').css('min-width','450px').editableList({
+            $('#node-config-input-modeldata-container').css('max-height','500px').css('min-width','450px').editableList({
                 addItem: function(container,i,opt) {
                     console.log(i);
                     console.log(opt);
