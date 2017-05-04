@@ -44,11 +44,112 @@
     });
 </script>
 
+<script type="text/x-red" data-template-name="mongodbmodel">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-config-input-name" data-i18n="[placeholder]node-red:common.label.name">
+    </div>
+
+    <div class="form-row node-config-input-modeldata-container-row">
+        <ol id="node-config-input-modeldata-container"></ol>
+    </div>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('mongodbmodel', {
+        category: 'config',
+        color: "rgb(218, 196, 180)",
+        defaults: {
+            name: {value: ""},
+            properties: {value: [{t:'String', v: 'uepa'}]},
+        },
+        label: function() {
+            return this.name;
+        },
+        oneditprepare: function(){
+            var datatypes = [
+                {d: "String", t: "String"},
+                {d: "Buffer", t: "Buffer"},
+                {d: "Boolean", t: "Boolean"},
+                {d: "Date", t: "Date"},
+                {d: "Number", t: "Number"},
+                {d: "Schema.Types.Mixed", t: "Mixed"},
+                {d: "Schema.Types.ObjectId", t: "ObjectId"},
+                {d: "[]", t: "Array"}
+            ]
+
+            $('#node-config-input-modeldata-container').css('min-height','300px').css('min-width','450px').editableList({
+                addItem: function(container,i,opt) {
+                    console.log(i);
+                    console.log(opt);
+                    if (!opt.hasOwnProperty('p')) {
+                        opt.p = {};
+                    }
+                    var property = opt.p;
+                    if (!property.hasOwnProperty('t')) {
+                        property.t = 'String';
+                    }
+                    if (!property.hasOwnProperty('v')) {
+                        property.v = '';
+                    }
+                    
+                    var row = $('<div/>').appendTo(container);
+                    var valueField = $('<input/>',{class:"node-input-model-value",type:"text",style:"margin-left: 5px;"}).appendTo(row);
+                    var selectField = $('<select/>',{style:"width:120px; margin-left: 5px; text-align: center;"}).appendTo(row);
+                    for (var d in datatypes) {
+                        selectField.append($("<option></option>").val(datatypes[d].d).text(datatypes[d].t));
+                    }
+                    var finalspan = $('<span/>',{style:"float: right;margin-top: 6px;"}).appendTo(row);
+                    finalspan.append(' &#8594; <span class="node-input-modeldata-index">'+(i+1)+'</span> ');
+                    selectField.val(property.t);
+                    selectField.change();
+                    valueField.val(property.v);
+                },
+                addButton: 'Add property',
+                removable: true,
+                removeItem: function(opt) {
+                    if (opt.hasOwnProperty('i')) {
+                        var removedList = $("#node-config-input-modeldata-container").data('removedList')||[];
+                        removedList.push(opt.i);
+                        $("#node-config-input-modeldata-container").data('removedList',removedList);
+                    }
+                    var properties = $("#node-config-input-modeldata-container").editableList('items');
+                    properties.each(function(i) { $(this).find(".node-input-modeldata-index").html(i+1); });
+                }
+            });
+            console.log(this.properties);
+            for (var i=0;i<this.properties.length;i++) {
+                var property = this.properties[i];
+                $("#node-config-input-modeldata-container").editableList('addItem',{p:property,i:i});
+            }
+        },
+        oneditsave: function() {
+            var properties = $("#node-config-input-modeldata-container").editableList('items');
+            var node = this;
+            console.log(properties);
+            node.properties = [];
+            properties.each(function(i) {
+                var propertiesData = $(this).data('data');
+                var properties = $(this);
+                var type = properties.find("select").val();
+                var p = {t:type};
+                p.v = properties.find(".node-input-model-value").val();
+                console.log(p);
+                node.properties.push(p);
+            });
+        }
+    });
+</script>
+
 
 <script type="text/x-red" data-template-name="mongodb out">
     <div class="form-row">
         <label for="node-input-mongodb"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.server"></span></label>
         <input type="text" id="node-input-mongodb">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mongodbmodel"><i class="fa fa-bookmark"></i> <span data-i18n="mongodb.label.collection"></span></label>
+        <input type="text" id="node-input-mongodbmodel">
     </div>
     <div class="form-row">
         <label for="node-input-collection"><i class="fa fa-briefcase"></i> <span data-i18n="mongodb.label.collection"></span></label>
@@ -163,8 +264,8 @@
         color: "rgb(218, 196, 180)",
         defaults: {
             mongodb: {type: "mongodb", required: true},
+            mongodbmodel: {type: "mongodbmodel", required: true},
             name: {value: ""},
-            collection: {value: ""},
             upsert: {value: false},
             multi: {value: false},
             operation: {value: "store"},
