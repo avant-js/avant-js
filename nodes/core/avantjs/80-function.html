@@ -21,6 +21,10 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="common.label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]common.label.name">
     </div>
+    <div class="form-row">
+        <label for="node-input-inline"> <span>Inline function</span></label>
+        <input type="checkbox" id="node-input-inline">
+    </div>
     <div class="form-row" style="margin-bottom: 0px;">
         <label for="node-input-func"><i class="fa fa-wrench"></i> <span data-i18n="function.label.function"></span></label>
         <input type="hidden" id="node-input-func" autofocus="autofocus">
@@ -30,7 +34,7 @@
         <div style="height: 250px; min-height:150px;" class="node-text-editor" id="node-input-func-editor" ></div>
     </div>
     <div class="form-row">
-        <label for="node-input-output"><i class="fa fa-tag"></i>Output</label>
+        <label for="node-input-output"><i class="fa fa-reply"></i>Output</label>
         <input type="text" id="node-input-output">
     </div>
     <div class="form-tips"><span data-i18n="function.tip"></span></div>
@@ -53,6 +57,7 @@
             outputLabels: function(index) {
                 return this.output;
             },
+            inline: {value: false},
             func: {value:"\nPromise.resolve(true)"},
             noerr: {value:0,required:true,validate:function(v){ return ((!v) || (v === 0)) ? true : false; }}
         },
