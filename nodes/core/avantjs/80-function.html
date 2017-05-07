@@ -43,7 +43,7 @@
 <script type="text/x-red" data-help-name="function">
     <p>A function block where you can write code to do more interesting things.</p>
     <p>The function will receive the configured parameters from the previous node.</p>
-    <p>The input parameters must be declared in function name just like a javascript function <code>function myFunc (arg1, arg2)</code></p>
+    <p>The input parameter of a function is always the output sent by the node connected on its input</p>
     <p>It must return/send a Promise.resolve() object with the return value.</p>
 </script>
 
@@ -52,7 +52,7 @@
         color:"#fdd0a2",
         category: 'function',
         defaults: {
-            name: {value:"newFunction()"},
+            name: {value:"newFunction"},
             output: {value: 'returnObj'},
             outputLabels: function(index) {
                 return this.output;
