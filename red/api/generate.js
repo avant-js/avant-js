@@ -31,6 +31,81 @@ var log;
 var redNodes;
 var settings;
 
+class Caller{
+    constructor(name, type, input, code){
+        this.name = name;
+        this.type = type;
+        this.code = code;
+        this.input = input;
+    }
+}
+
+class CallBuilder{
+    buildCall(node, input){
+        if(node.type === 'function') return this.createFunctionCall(node, input);
+        if(node.type === 'mongo out') return this.createModelCall(node, input);
+    }
+
+    createFunctionCall(node, input){
+        let call = new Caller(node.name, 'function', input);
+        if(node.inline){
+            call.code = node.func;
+        }else{
+            call.code = `${node.name}(${input})`;
+        }
+        return call;
+    }
+
+    createModelCall(node, input){
+
+    }
+}
+
+class Route{
+    constructor(name){
+        this.name = name;
+        this.urls = [];
+        this.imports = [],
+        this.declarations = [];
+    }
+
+}
+
+class Url{
+    constructor(id, name, url, method, output){
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.method = method;
+        this.output = output;
+        this.calls = [];
+        this.wires = [];
+    }
+
+    getNextNode(node, nodeList){
+        for (let i = 0; i < node.wires.length; i++){
+            let w = node.wires[i];
+            if(Array.isArray(w)){
+                return nodeList.find(n => n.id === w[0]);
+            } else {
+                return nodeList.find(n => n.id === w);
+            }
+        } 
+    }
+
+    buildCallList(nodes){
+        let builder = new CallBuilder();
+        let next = this.getNextNode(this, nodes);
+        let input = this.output;
+        while(next){
+            let call = builder.buildCall(next, input);
+            if(call) this.calls.push(call);
+            input = next.output;
+            next = this.getNextNode(next, nodes);
+        }
+    }
+}
+
 module.exports = {
     init: function(runtime) {
         settings = runtime.settings;
@@ -38,24 +113,33 @@ module.exports = {
         log = runtime.log;
     },
     post: function(req,res) {
-        var flows = req.body;
+        let flows = [];
+        let nodes = [];
+        let paths = [];
+        req.body.flows.forEach(node => {
+            if (node.type === 'tab'){
+                flows.push(node);
+            }
+            else if (node.type === 'http in'){
+                paths.push(node);
+            }
+            else{
+                nodes.push(node);
+            }
+        });  
 
-        // Get function parameters
-        flows.flows.forEach(node => {
-           if(node.type == 'function'){
-                var functionName = node.name.split('(')[0];
-                var regExp = /\(([^)]+)\)/;
-                var parameters = node.name.match(regExp)[1];
-                if(parameters)
-                    parameters = parameters.split(',').map(param => param.trim());
-                console.log(parameters);
-                console.log(node.output);
-           }
-           else{
-               console.log(node);
-           }
+        flows.map(flow => {
+            flow.nodes = nodes.filter(node => node.z === flow.id);
+            let route = new Route(flow.label.replace(' ', ''));
+            paths.filter(path => path.z === flow.id).forEach(path => {
+                 let url = new Url(path.id, path.name, path.url, path.method, path.output);
+                 url.wires = path.wires;
+                 url.buildCallList(flow.nodes);
+                 console.log(url.calls);
+                 route.urls.push()
+            });
         });
-        
+
         /*
         flows.flows.forEach(node => {
             if(callMeMap[node.type])
