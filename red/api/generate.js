@@ -51,7 +51,7 @@ class CallBuilder{
         if(node.inline){
             call.code = node.func;
         }else{
-            call.code = `${node.name}(${input})`;
+            call.code = node.name;
         }
         return call;
     }
@@ -61,12 +61,54 @@ class CallBuilder{
     }
 }
 
+class Declaration{
+    constructor(name, type, input, code){
+        this.name = name;
+        this.type = type;
+        this.input = input;
+        this.code = code;
+    }
+}
+
+class DeclarationBuilder{
+    findInputForNode(node, nodeList){
+        for (let i = 0; i < nodeList.length; i++){
+            let n = nodeList[i];
+            if(!n.wires)
+                continue;
+            for (let j = 0; j < n.wires.length; j++){
+                let w = n.wires[j];
+                if(Array.isArray(w))
+                    if(node.id === w[0]) return n.output;
+            }
+        }
+    }
+
+    buildDeclaration(node, nodeList){
+        let input = this.findInputForNode(node, nodeList);
+        let decl = new Declaration(node.name, node.type, input);
+        if(node.type === 'function') decl.code = node.func;
+        return decl;
+    }
+
+    buildDeclarationList(route, nodeList){
+        let declarations = [];
+        route.nodes.forEach(node => {
+            if(node.type === 'function' && node.inline === false){
+                declarations.push(this.buildDeclaration(node, nodeList));
+            }
+        });
+        return declarations;
+    }
+}
+
 class Route{
     constructor(name){
         this.name = name;
         this.urls = [];
         this.imports = [],
         this.declarations = [];
+        this.nodes = [];
     }
 
 }
@@ -75,7 +117,7 @@ class Url{
     constructor(id, name, url, method, output){
         this.id = id;
         this.name = name;
-        this.url = url;
+        this.path = url;
         this.method = method;
         this.output = output;
         this.calls = [];
@@ -113,10 +155,11 @@ module.exports = {
         log = runtime.log;
     },
     post: function(req,res) {
+        let allNodes = req.body.flows;
         let flows = [];
         let nodes = [];
         let paths = [];
-        req.body.flows.forEach(node => {
+        allNodes.forEach(node => {
             if (node.type === 'tab'){
                 flows.push(node);
             }
@@ -126,58 +169,52 @@ module.exports = {
             else{
                 nodes.push(node);
             }
-        });  
+        });
+
+        let server = {
+            port: 3000,
+            host: 'localhost',
+            routes: []
+        }  
 
         flows.map(flow => {
             flow.nodes = nodes.filter(node => node.z === flow.id);
             let route = new Route(flow.label.replace(' ', ''));
+            route.nodes = flow.nodes;
             paths.filter(path => path.z === flow.id).forEach(path => {
-                 let url = new Url(path.id, path.name, path.url, path.method, path.output);
+                 let url = new Url(path.id, path.name, path.url, path.method.toUpperCase(), path.output);
                  url.wires = path.wires;
                  url.buildCallList(flow.nodes);
-                 console.log(url.calls);
-                 route.urls.push()
+                 route.urls.push(url);
             });
+            let declBuilder = new DeclarationBuilder();
+            route.declarations = declBuilder.buildDeclarationList(route, allNodes);
+            server.routes.push(route); 
         });
 
-        /*
-        flows.flows.forEach(node => {
-            if(callMeMap[node.type])
-                node.callMe = callMeMap[node.type](node);
-        });
-
-        flows.flows.forEach(node => {
-            if(node.primary && node.wires){
-                var outputs = [];
-                var next = flows.flows.find(element => element.id == node.wires[0]);
-                while(next){
-                    outputs.push(next.callMe);
-                    if(next.wires && next.wires[0]){
-                        next = flows.flows.find(element => element.id == next.wires[0]);
+        var app = {
+            server: server,
+            database: {
+                name: "mydb",
+                models: [
+                    {
+                        name: "music",
+                        entity: "Music",
+                        schema: {
+                            title: { type: "String" },
+                            artist: { type: "String" },
+                            album: { type: "String" }
+                        }
                     }
-                    else{
-                        break;
-                    }
-                }
-                node.callOut = outputs;
+                ]
             }
+        }
 
-            if(templateMap[node.type])
-                node.code = templateMap[node.type](node);
-        });
-
-        var code = "";
-        flows.flows.forEach(node => {
-            if(node.code)
-                code += node.code + '\n';
-        })
-        fs.writeFile(path.join(__dirname, '..', '..', 'generated.js'), beautify(code, { indent_size: 4 }));*/
-
-        /*env.lookup(function () {
-  env.run('test', {'someAnswer': false, 'skip-install': true }, function (err) {
-    console.log('done');
-  });
-}); */
+        env.lookup(function () {
+            env.run('avantjs', {'app': app, 'skip-install': true }, function (err) {
+                console.log('done');
+            });
+        }); 
 
     }
 }
