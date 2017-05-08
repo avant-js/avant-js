@@ -155,12 +155,12 @@
     <div class="form-row">
         <label for="node-input-operation"><i class="fa fa-wrench"></i> <span data-i18n="mongodb.label.operation"></span></label>
         <select type="text" id="node-input-operation" style="display: inline-block; vertical-align: top;">
-            <option value="insert" data-i18n="mongodb.operation.insert"></option>
-            <option value="update" data-i18n="mongodb.operation.update"></option>
-            <option value="delete" data-i18n="mongodb.operation.remove"></option>
+            <option value="insertMany" data-i18n="mongodb.operation.insert"></option>
+            <option value="updateMany" data-i18n="mongodb.operation.update"></option>
+            <option value="deleteMany" data-i18n="mongodb.operation.remove"></option>
         </select>
     </div>
-    <div class="form-row">
+    <div class="form-row node-input-query">
         <label for="node-input-query"><i class="fa fa-question"></i> <span>Query</span></label>
         <input type="text" id="node-input-query">
     </div>
@@ -216,27 +216,30 @@
         $("#node-input-operation").change(function () {
             var id = $("#node-input-operation option:selected").val();
 
-            if (id === "update") {
+            if (id === "updateMany") {
                 $(".node-input-upsert, .node-input-multi").show();
                
-            } else if (id === "delete") {
+            } else if (id === "deleteMany") {
                 $(".node-input-upsert, .node-input-multi").hide();
             } else {
                 $(".node-input-upsert, .node-input-multi").hide();
             }
 
-            if (id === "update" || id === "store" || id === "insert"){
+            if (id === "updateMany" || id === "store" || id === "insertMany"){
                  $(".node-input-data").show();
             }
             else{
                 $(".node-input-data").hide();
             }
 
-            if (id === "update"){
-                $("#node-input-output").val("");
-                $("#node-input-output").prop('readonly', true);
+            if (id === "insertMany"){
+                 $(".node-input-query").hide();
             }
-            else if (id === "count"){
+            else{
+                $(".node-input-query").show();
+            }
+
+            if (id === "count"){
                 $("#node-input-output").val("quantity");
                 $("#node-input-output").prop('readonly', false);
             }
@@ -264,7 +267,7 @@
             name: {value: ""},
             upsert: {value: false},
             multi: {value: false},
-            operation: {value: "store"},
+            operation: {value: "updateMany"},
             query: {value: "{_id: req.params.id}"},
             data: {value: "req.payload"},
             output: {value: ""},

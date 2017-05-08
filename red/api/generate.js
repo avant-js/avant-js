@@ -43,7 +43,7 @@ class Caller{
 class CallBuilder{
     buildCall(node, input){
         if(node.type === 'function') return this.createFunctionCall(node, input);
-        if(node.type === 'mongo out') return this.createModelCall(node, input);
+        if(node.type === 'mongodb out' || node.type === 'mongodb in') return this.createModelCall(node, input);
     }
 
     createFunctionCall(node, input){
@@ -57,7 +57,8 @@ class CallBuilder{
     }
 
     createModelCall(node, input){
-
+        let call = new Caller(node.name, 'model', node.parameters.join(' ,'), node.code);
+        return call;
     }
 }
 
@@ -66,6 +67,15 @@ class Declaration{
         this.name = name;
         this.type = type;
         this.input = input;
+        this.code = code;
+    }
+}
+
+class ImportDeclaration{
+    constructor(name, type, entity, code){
+        this.name = name;
+        this.type = type;
+        this.entity = entity;
         this.code = code;
     }
 }
@@ -84,21 +94,44 @@ class DeclarationBuilder{
         }
     }
 
-    buildDeclaration(node, nodeList){
+    buildFunctionDeclaration(node, nodeList){
         let input = this.findInputForNode(node, nodeList);
-        let decl = new Declaration(node.name, node.type, input);
-        if(node.type === 'function') decl.code = node.func;
+        let decl = new Declaration(node.name, node.type, input, node.func);
         return decl;
     }
+
+    buildImportDeclaration(node){
+        let decl = new ImportDeclaration(node.name, 'model', node.entity);
+        return decl;
+    }
+    
 
     buildDeclarationList(route, nodeList){
         let declarations = [];
         route.nodes.forEach(node => {
+            let decl = null;
             if(node.type === 'function' && node.inline === false){
-                declarations.push(this.buildDeclaration(node, nodeList));
+                decl = this.buildFunctionDeclaration(node, nodeList);
+            }
+            else if(node.type === 'mongodb in' || node.type === 'mongodb out'){
+                decl = this.buildImportDeclaration(node);
+            }
+            if(decl){
+                let alreadyExists = declarations.find(d => d.name === decl.name && d.type === decl.type);
+                if(!alreadyExists)
+                    declarations.push(decl);
             }
         });
         return declarations;
+    }
+}
+
+class Model{
+    constructor(id, name, schema){
+        this.id = id;
+        this.name = name.toLowerCase();
+        this.entity = this.name.charAt(0).toUpperCase() + this.name.slice(1); //capitalize first letter;
+        this.schema = schema || {};
     }
 }
 
@@ -159,12 +192,20 @@ module.exports = {
         let flows = [];
         let nodes = [];
         let paths = [];
+        let collections = [];
+        let mongodb = null;
         allNodes.forEach(node => {
             if (node.type === 'tab'){
                 flows.push(node);
             }
             else if (node.type === 'http in'){
                 paths.push(node);
+            }
+            else if(node.type === 'collection'){
+                collections.push(node);
+            }
+            else if(node.type === 'mongodb'){
+                mongodb = node;
             }
             else{
                 nodes.push(node);
@@ -175,7 +216,40 @@ module.exports = {
             port: 3000,
             host: 'localhost',
             routes: []
-        }  
+        }
+
+        let database = mongodb;
+        if(database){
+            database.models = [];
+            collections.map(c => {
+                let model = new Model(c.id, c.name);
+                if(c.properties){
+                    c.properties.forEach(p => {
+                        model.schema[p.v] = {type: p.t};
+                    });
+                }
+                database.models.push(model);
+            });
+        }
+
+        nodes.forEach(n => {
+            if(n.type !== 'mongodb in' && n.type !== 'mongodb out')
+                return;
+            try{
+                let model = database.models.find(m => n.collection === m.id);
+                n.name = model.name;
+                n.entity = model.entity;
+                n.parameters = [];
+                if(n.operation !== 'insertMany' && n.query) n.parameters.push(n.query);
+                if(n.data && (n.operation === 'insertMany' || n.operation === 'updateMany')){
+                    if(n.operation === 'insertMany' && !Array.isArray(n.data)){
+                        n.parameters.push(n.data);
+                    }
+                    else n.parameters.push(n.data);
+                } 
+                n.code = n.entity + '.' + n.operation;
+            }catch(err){}
+        })
 
         flows.map(flow => {
             flow.nodes = nodes.filter(node => node.z === flow.id);
@@ -188,30 +262,21 @@ module.exports = {
                  route.urls.push(url);
             });
             let declBuilder = new DeclarationBuilder();
-            route.declarations = declBuilder.buildDeclarationList(route, allNodes);
+            let declarations = declBuilder.buildDeclarationList(route, allNodes);
+            route.declarations = declarations.filter(d => d.type === 'function');
+            route.imports = declarations.filter(d => d.type !== 'function');
             server.routes.push(route); 
         });
 
         var app = {
             server: server,
-            database: {
-                name: "mydb",
-                models: [
-                    {
-                        name: "music",
-                        entity: "Music",
-                        schema: {
-                            title: { type: "String" },
-                            artist: { type: "String" },
-                            album: { type: "String" }
-                        }
-                    }
-                ]
-            }
+            database: database
         }
 
+        console.log(require('util').inspect(app, {showHidden: false, depth: null}));
+
         env.lookup(function () {
-            env.run('avantjs', {'app': app, 'skip-install': true }, function (err) {
+            env.run('avantjs', {'app': app}, function (err) {
                 console.log('done');
             });
         }); 
