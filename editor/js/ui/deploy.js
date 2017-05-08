@@ -19,16 +19,28 @@ RED.deploy = (function() {
     //Matheus Webler edit
     function generateCode(){
         var nns = RED.nodes.createCompleteNodeSet();
-        var data = {flows:nns};
         $.ajax({
-                url:"generate",
-                type: "POST",
-                data: JSON.stringify(data),
-                contentType: "application/json; charset=utf-8",
-                headers: {
-                    "Node-RED-Deployment-Type":deploymentType
+            url:"http-api/swagger.json",
+            type: "GET",
+            success: function(data) {
+                var swaggerDoc = data;
+                var app = {
+                    flows:nns,
+                    swagger: swaggerDoc
                 }
-            });
+                console.log(swaggerDoc)
+                $.ajax({
+                    url:"generate",
+                    type: "POST",
+                    data: JSON.stringify(app),
+                    contentType: "application/json; charset=utf-8",
+                    headers: {
+                        "Node-RED-Deployment-Type":deploymentType
+                    }
+                });
+            },
+            contentType: "application/json; charset=utf-8",
+        });
     }
 
     var deploymentTypes = {

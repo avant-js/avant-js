@@ -147,7 +147,7 @@ class Route{
 }
 
 class Url{
-    constructor(id, name, url, method, output, docId){
+    constructor(id, name, url, method, output){
         this.id = id;
         this.name = name;
         this.path = url;
@@ -155,7 +155,6 @@ class Url{
         this.output = output;
         this.calls = [];
         this.wires = [];
-        this.docId = docId;
     }
 
     getNextNode(node, nodeList){
@@ -180,23 +179,6 @@ class Url{
             next = this.getNextNode(next, nodes);
         }
     }
-
-    buildDocs(docsList){
-        let swaggerDoc = docsList.find(d => d.id === this.docId);
-        if(!swaggerDoc) return;
-        this.docs = {};
-        this.docs.tags = swaggerDoc.tags;
-        this.docs.description = swaggerDoc.description;
-        this.docs.responses = swaggerDoc.responses;
-        var keys = Object.keys(this.docs.responses);
-        for(var i=0;i<keys.length;i++){
-            var key = keys[i];
-            if(this.docs.responses[key].schema){
-                let schema = "Joi.compile(" + require('util').inspect(this.docs.responses[key].schema, {showHidden: false, depth: null}) + ")";
-                this.docs.responses[key].schema = schema;
-            }
-        }
-    }
 }
 
 module.exports = {
@@ -207,6 +189,7 @@ module.exports = {
     },
     post: function(req,res) {
         let allNodes = req.body.flows;
+        let swagger = req.body.swagger;
         let flows = [];
         let nodes = [];
         let paths = [];
@@ -238,7 +221,8 @@ module.exports = {
         let server = {
             port: 3000,
             host: 'localhost',
-            routes: []
+            routes: [],
+            swagger: swagger
         }
 
         let database = mongodb;
@@ -282,7 +266,6 @@ module.exports = {
                  let url = new Url(path.id, path.name, path.url, path.method.toUpperCase(), path.output, path.swaggerDoc);
                  url.wires = path.wires;
                  url.buildCallList(flow.nodes);
-                 url.buildDocs(docs);
                  route.urls.push(url);
             });
             let declBuilder = new DeclarationBuilder();
@@ -296,6 +279,8 @@ module.exports = {
             server: server,
             database: database
         }
+
+
 
         //console.log(require('util').inspect(app, {showHidden: false, depth: null}));
 

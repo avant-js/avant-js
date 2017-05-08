@@ -27,7 +27,7 @@ module.exports = function(RED) {
             resp = {
                 swagger: "2.0",
                 info: {
-                    "title": "My Node-RED API",
+                    "title": "My AvantJS API",
                     "version": "0.0.1"
                 }
             };
@@ -50,7 +50,10 @@ module.exports = function(RED) {
         RED.nodes.eachNode(function(node) {
             if (node && node.type === "http in") {
                 if(true){
-                    var swagger = RED.nodes.getNode(node.swaggerDoc);
+                    var swagger;
+                    RED.nodes.eachNode(n => {
+                        if(n.id === node.swaggerDoc) swagger = n;
+                    });
 
                     var url = node.url.replace(/\/:\w*/g, function convToSwaggerPath(x){return '/{' + x.substring(2) + '}';});
                     if(url.charAt(0) !== '/'){
