@@ -204,5 +204,14 @@ module.exports = {
             // Whether or not to include audit events in the log output
             audit: false
         }
+    },
+    swagger: {
+        "template": {
+            "swagger": "2.0",
+            "info": {
+            "title": "My Node-RED API",
+            "version": "0.0.1"
+            }
+        }
     }
 }

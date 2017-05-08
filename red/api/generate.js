@@ -147,7 +147,7 @@ class Route{
 }
 
 class Url{
-    constructor(id, name, url, method, output){
+    constructor(id, name, url, method, output, docId){
         this.id = id;
         this.name = name;
         this.path = url;
@@ -155,6 +155,7 @@ class Url{
         this.output = output;
         this.calls = [];
         this.wires = [];
+        this.docId = docId;
     }
 
     getNextNode(node, nodeList){
@@ -179,6 +180,23 @@ class Url{
             next = this.getNextNode(next, nodes);
         }
     }
+
+    buildDocs(docsList){
+        let swaggerDoc = docsList.find(d => d.id === this.docId);
+        if(!swaggerDoc) return;
+        this.docs = {};
+        this.docs.tags = swaggerDoc.tags;
+        this.docs.description = swaggerDoc.description;
+        this.docs.responses = swaggerDoc.responses;
+        var keys = Object.keys(this.docs.responses);
+        for(var i=0;i<keys.length;i++){
+            var key = keys[i];
+            if(this.docs.responses[key].schema){
+                let schema = "Joi.compile(" + require('util').inspect(this.docs.responses[key].schema, {showHidden: false, depth: null}) + ")";
+                this.docs.responses[key].schema = schema;
+            }
+        }
+    }
 }
 
 module.exports = {
@@ -194,6 +212,8 @@ module.exports = {
         let paths = [];
         let collections = [];
         let mongodb = null;
+        let docs = [];
+
         allNodes.forEach(node => {
             if (node.type === 'tab'){
                 flows.push(node);
@@ -206,6 +226,9 @@ module.exports = {
             }
             else if(node.type === 'mongodb'){
                 mongodb = node;
+            }
+            else if(node.type === 'swagger-doc'){
+                docs.push(node);
             }
             else{
                 nodes.push(node);
@@ -256,9 +279,10 @@ module.exports = {
             let route = new Route(flow.label.replace(' ', ''));
             route.nodes = flow.nodes;
             paths.filter(path => path.z === flow.id).forEach(path => {
-                 let url = new Url(path.id, path.name, path.url, path.method.toUpperCase(), path.output);
+                 let url = new Url(path.id, path.name, path.url, path.method.toUpperCase(), path.output, path.swaggerDoc);
                  url.wires = path.wires;
                  url.buildCallList(flow.nodes);
+                 url.buildDocs(docs);
                  route.urls.push(url);
             });
             let declBuilder = new DeclarationBuilder();
@@ -273,7 +297,7 @@ module.exports = {
             database: database
         }
 
-        console.log(require('util').inspect(app, {showHidden: false, depth: null}));
+        //console.log(require('util').inspect(app, {showHidden: false, depth: null}));
 
         env.lookup(function () {
             env.run('avantjs', {'app': app}, function (err) {
