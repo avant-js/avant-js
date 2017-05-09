@@ -1,7 +1,5 @@
 # AvantJS
 
-http://nodered.org
-
 A visual tool for bootstrapping NodeJS applications based on [Node-RED](http://nodered.org/).
 
 ## Quick Start
