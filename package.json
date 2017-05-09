@@ -45,6 +45,7 @@
     "follow-redirects": "1.2.2",
     "fs-extra": "1.0.0",
     "fs.notify": "0.0.4",
+    "generator-avantjs": "github:avant-js/generator-avantjs",
     "hapi": "^16.1.1",
     "i18next": "1.10.6",
     "i18next-client": "1.10.3",
