@@ -2,6 +2,8 @@
 
 A visual tool for bootstrapping NodeJS applications based on [Node-RED](http://nodered.org/).
 
+![AvantJS flows](https://github.com/avant-js/docs/raw/master/screenshots/sample-flow.PNG)
+
 ## Quick Start
 
 If you want to run the latest code from git, here's how to get started:
@@ -25,7 +27,11 @@ If you want to run the latest code from git, here's how to get started:
    or
 
         node red.js
-        
+       
+5. The server will be running on `http://localhost:1880`
+
+6. To generate the code click on Generte button in the top toolbar. The code will be saved to the `generatedcode` folder inside AvantJS folder
+
 ## Authors
 
 Node-RED is a project of the [JS Foundation](http://js.foundation).
