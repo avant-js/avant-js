@@ -181,6 +181,8 @@
     </div>
 </script>
 
+<!-- Insert this line above script imports  -->
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 
 <script src="vendor/vendor.js"></script>
 <script src="vendor/jsonata/jsonata.min.js"></script>
@@ -188,6 +190,8 @@
 <script src="vendor/ace/ext-language_tools.js"></script>
 <script src="{{ asset.red }}"></script>
 <script src="{{ asset.main }}"></script>
+<!-- Insert this line after script imports -->
+<script>if (window.module) module = window.module;</script>
 
 </body>
 </html>
