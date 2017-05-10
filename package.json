@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/node-red/node-red.git"
   },
-  "main": "red/red.js",
+  "main": "red.js",
   "scripts": {
     "start": "node red.js",
     "test": "grunt",
@@ -24,13 +24,17 @@
     },
     {
       "name": "Dave Conway-Jones"
+    },
+    {
+      "name": "Matheus Webler"
     }
   ],
   "keywords": [
     "editor",
     "messaging",
     "iot",
-    "flow"
+    "flow",
+    "api"
   ],
   "dependencies": {
     "basic-auth": "1.1.0",
@@ -59,10 +63,6 @@
     "mongoose": "^4.9.8",
     "mqtt": "2.2.1",
     "mustache": "2.3.0",
-    "node-red-node-email": "0.1.*",
-    "node-red-node-feedparser": "0.1.*",
-    "node-red-node-rbe": "0.1.*",
-    "node-red-node-twitter": "0.1.*",
     "nopt": "3.0.6",
     "oauth2orize": "1.7.0",
     "on-headers": "1.0.1",
