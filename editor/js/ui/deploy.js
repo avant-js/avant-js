@@ -19,6 +19,10 @@ RED.deploy = (function() {
     //Matheus Webler edit
     function generateCode(){
         var nns = RED.nodes.createCompleteNodeSet();
+        save(true, true);
+        $( "#node-dialog-confirm-deploy" ).dialog( "open" );
+        return;
+        
         $.ajax({
             url:"http-api/swagger.json",
             type: "GET",
@@ -102,7 +106,7 @@ RED.deploy = (function() {
         '</a>'+
         '</span></li>').prependTo(".header-toolbar");
 
-        $('#btn-deploy').click(function() { save(); });
+        $('#btn-deploy').click(function() { save(true, true); });
 
         RED.actions.add("core:deploy-flows",save);
 
@@ -111,11 +115,11 @@ RED.deploy = (function() {
         RED.actions.add("core:generate-flows",generateCode);
 
         $( "#node-dialog-confirm-deploy" ).dialog({
-                title: RED._('deploy.confirm.button.confirm'),
+                title: 'Confirm code generation',
                 modal: true,
                 autoOpen: false,
                 width: 550,
-                height: "auto",
+                height: 300,
                 buttons: [
                     {
                         text: RED._("common.label.cancel"),
@@ -124,83 +128,24 @@ RED.deploy = (function() {
                         }
                     },
                     {
-                        id: "node-dialog-confirm-deploy-review",
-                        text: RED._("deploy.confirm.button.review"),
-                        class: "primary disabled",
-                        click: function() {
-                            if (!$("#node-dialog-confirm-deploy-review").hasClass('disabled')) {
-                                RED.diff.showRemoteDiff();
-                                $( this ).dialog( "close" );
-                            }
-                        }
-                    },
-                    {
-                        id: "node-dialog-confirm-deploy-merge",
-                        text: RED._("deploy.confirm.button.merge"),
-                        class: "primary disabled",
-                        click: function() {
-                            RED.diff.mergeDiff(currentDiff);
-                            $( this ).dialog( "close" );
-                        }
-                    },
-                    {
                         id: "node-dialog-confirm-deploy-deploy",
                         text: RED._("deploy.confirm.button.confirm"),
                         class: "primary",
                         click: function() {
-
-                            var ignoreChecked = $( "#node-dialog-confirm-deploy-hide" ).prop("checked");
-                            if (ignoreChecked) {
-                                ignoreDeployWarnings[$( "#node-dialog-confirm-deploy-type" ).val()] = true;
-                            }
-                            save(true,$( "#node-dialog-confirm-deploy-type" ).val() === "conflict");
-                            $( this ).dialog( "close" );
+                            $( "#node-dialog-confirm-deploy-loading" ).show();
+                            $( "#node-dialog-confirm-deploy-config").hide();
+                            $("node-dialog-confirm-deploy-deploy" ).addClass("disabled");
+                            //$( "#node-dialog-confirm-deploy " ).show();
+                            
+                            //$( this ).dialog( "close" );
                         }
                     }
                 ],
                 create: function() {
-                    $("#node-dialog-confirm-deploy").parent().find("div.ui-dialog-buttonpane")
-                        .prepend('<div style="height:0; vertical-align: middle; display:inline-block; margin-top: 13px; float:left;">'+
-                                   '<input style="vertical-align:top;" type="checkbox" id="node-dialog-confirm-deploy-hide">'+
-                                   '<label style="display:inline;" for="node-dialog-confirm-deploy-hide"> do not warn about this again</label>'+
-                                   '<input type="hidden" id="node-dialog-confirm-deploy-type">'+
-                                   '</div>');
+
                 },
                 open: function() {
-                    if ($( "#node-dialog-confirm-deploy-type" ).val() === "conflict") {
-                        $("#node-dialog-confirm-deploy-deploy").hide();
-                        $("#node-dialog-confirm-deploy-review").addClass('disabled').show();
-                        $("#node-dialog-confirm-deploy-merge").addClass('disabled').show();
-                        currentDiff = null;
-                        $("#node-dialog-confirm-deploy-conflict-checking").show();
-                        $("#node-dialog-confirm-deploy-conflict-auto-merge").hide();
-                        $("#node-dialog-confirm-deploy-conflict-manual-merge").hide();
-
-                        var now = Date.now();
-                        RED.diff.getRemoteDiff(function(diff) {
-                            var ellapsed = Math.max(1000 - (Date.now()-now), 0);
-                            currentDiff = diff;
-                            setTimeout(function() {
-                                $("#node-dialog-confirm-deploy-conflict-checking").hide();
-                                var d = Object.keys(diff.conflicts);
-                                if (d.length === 0) {
-                                    $("#node-dialog-confirm-deploy-conflict-auto-merge").show();
-                                    $("#node-dialog-confirm-deploy-merge").removeClass('disabled')
-                                } else {
-                                    $("#node-dialog-confirm-deploy-conflict-manual-merge").show();
-                                }
-                                $("#node-dialog-confirm-deploy-review").removeClass('disabled')
-                            },ellapsed);
-                        })
-
-
-                        $("#node-dialog-confirm-deploy-hide").parent().hide();
-                    } else {
-                        $("#node-dialog-confirm-deploy-deploy").show();
-                        $("#node-dialog-confirm-deploy-review").hide();
-                        $("#node-dialog-confirm-deploy-merge").hide();
-                        $("#node-dialog-confirm-deploy-hide").parent().show();
-                    }
+                    $("#node-dialog-confirm-deploy-deploy").show();                    
                 }
         });
 
@@ -255,81 +200,13 @@ RED.deploy = (function() {
     }
 
     function resolveConflict(currentNodes) {
-        $( "#node-dialog-confirm-deploy-config" ).hide();
-        $( "#node-dialog-confirm-deploy-unknown" ).hide();
-        $( "#node-dialog-confirm-deploy-unused" ).hide();
-        $( "#node-dialog-confirm-deploy-conflict" ).show();
+        
         $( "#node-dialog-confirm-deploy-type" ).val("conflict");
         $( "#node-dialog-confirm-deploy" ).dialog( "open" );
     }
 
     function save(skipValidation,force) {
         if (!$("#btn-deploy").hasClass("disabled")) {
-            if (!skipValidation) {
-                var hasUnknown = false;
-                var hasInvalid = false;
-                var hasUnusedConfig = false;
-
-                var unknownNodes = [];
-                var invalidNodes = [];
-
-                RED.nodes.eachNode(function(node) {
-                    hasInvalid = hasInvalid || !node.valid;
-                    if (!node.valid) {
-                        invalidNodes.push(getNodeInfo(node));
-                    }
-                    if (node.type === "unknown") {
-                        if (unknownNodes.indexOf(node.name) == -1) {
-                            unknownNodes.push(node.name);
-                        }
-                    }
-                });
-                hasUnknown = unknownNodes.length > 0;
-
-                var unusedConfigNodes = [];
-                RED.nodes.eachConfig(function(node) {
-                    if (node.users.length === 0 && (node._def.hasUsers !== false)) {
-                        unusedConfigNodes.push(getNodeInfo(node));
-                        hasUnusedConfig = true;
-                    }
-                });
-
-                $( "#node-dialog-confirm-deploy-config" ).hide();
-                $( "#node-dialog-confirm-deploy-unknown" ).hide();
-                $( "#node-dialog-confirm-deploy-unused" ).hide();
-                $( "#node-dialog-confirm-deploy-conflict" ).hide();
-
-                var showWarning = false;
-
-                if (hasUnknown && !ignoreDeployWarnings.unknown) {
-                    showWarning = true;
-                    $( "#node-dialog-confirm-deploy-type" ).val("unknown");
-                    $( "#node-dialog-confirm-deploy-unknown" ).show();
-                    $( "#node-dialog-confirm-deploy-unknown-list" )
-                        .html("<li>"+unknownNodes.join("</li><li>")+"</li>");
-                } else if (hasInvalid && !ignoreDeployWarnings.invalid) {
-                    showWarning = true;
-                    $( "#node-dialog-confirm-deploy-type" ).val("invalid");
-                    $( "#node-dialog-confirm-deploy-config" ).show();
-                    invalidNodes.sort(sortNodeInfo);
-                    $( "#node-dialog-confirm-deploy-invalid-list" )
-                        .html("<li>"+invalidNodes.map(function(A) { return (A.tab?"["+A.tab+"] ":"")+A.label+" ("+A.type+")"}).join("</li><li>")+"</li>");
-
-                } else if (hasUnusedConfig && !ignoreDeployWarnings.unusedConfig) {
-                    // showWarning = true;
-                    // $( "#node-dialog-confirm-deploy-type" ).val("unusedConfig");
-                    // $( "#node-dialog-confirm-deploy-unused" ).show();
-                    //
-                    // unusedConfigNodes.sort(sortNodeInfo);
-                    // $( "#node-dialog-confirm-deploy-unused-list" )
-                    //     .html("<li>"+unusedConfigNodes.map(function(A) { return (A.tab?"["+A.tab+"] ":"")+A.label+" ("+A.type+")"}).join("</li><li>")+"</li>");
-                }
-                if (showWarning) {
-                    $( "#node-dialog-confirm-deploy-hide" ).prop("checked",false);
-                    $( "#node-dialog-confirm-deploy" ).dialog( "open" );
-                    return;
-                }
-            }
 
             var nns = RED.nodes.createCompleteNodeSet();
 

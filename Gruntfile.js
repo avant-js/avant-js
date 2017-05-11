@@ -314,7 +314,8 @@ module.exports = function(grunt) {
                             //'bootstrap/css/**',
                             'bootstrap/img/**',
                             'jquery/css/**',
-                            'font-awesome/**'
+                            'font-awesome/**',
+                            'loading/**'
                         ],
                         expand: true,
                         dest: 'public/vendor/'
