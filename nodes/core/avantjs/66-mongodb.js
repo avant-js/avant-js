@@ -4,18 +4,6 @@ module.exports = function(RED) {
 
     function MongoNode(n) {
         RED.nodes.createNode(this,n);
-        this.hostname = n.hostname;
-        this.port = n.port;
-        this.db = n.db;
-        this.name = n.name;
-
-        var url = "mongodb://";
-        if (this.credentials && this.credentials.user && this.credentials.password) {
-            url += this.credentials.user+":"+this.credentials.password+"@";
-        }
-        url += this.hostname+":"+this.port+"/"+this.db;
-
-        this.url = url;
     }
 
     RED.nodes.registerType("mongodb",MongoNode,{

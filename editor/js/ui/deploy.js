@@ -73,57 +73,34 @@ RED.deploy = (function() {
      */
     function init(options) {
         options = options || {};
-        var type = options.type || "default";
 
-        if (type == "default") {
-            $('<li><span class="deploy-button-group button-group">'+
-              '<a id="btn-deploy" class="deploy-button disabled" href="#">'+
-                '<span class="deploy-button-content">'+
-                 '<img id="btn-deploy-icon" src="red/images/deploy-full-o.png"> '+
-                 '<span>'+RED._("deploy.deploy")+'</span>'+
-                '</span>'+
-                '<span class="deploy-button-spinner hide">'+
-                 '<img src="red/images/spin.svg"/>'+
-                '</span>'+
-              '</a>'+
-              '<a id="btn-deploy-options" data-toggle="dropdown" class="deploy-button" href="#"><i class="fa fa-caret-down"></i></a>'+
-              '</span></li>').prependTo(".header-toolbar");
-              RED.menu.init({id:"btn-deploy-options",
-                  options: [
-                      {id:"deploymenu-item-full",toggle:"deploy-type",icon:"red/images/deploy-full.png",label:RED._("deploy.full"),sublabel:RED._("deploy.fullDesc"),selected: true, onselect:function(s) { if(s){changeDeploymentType("full")}}},
-                      {id:"deploymenu-item-flow",toggle:"deploy-type",icon:"red/images/deploy-flows.png",label:RED._("deploy.modifiedFlows"),sublabel:RED._("deploy.modifiedFlowsDesc"), onselect:function(s) {if(s){changeDeploymentType("flows")}}},
-                      {id:"deploymenu-item-node",toggle:"deploy-type",icon:"red/images/deploy-nodes.png",label:RED._("deploy.modifiedNodes"),sublabel:RED._("deploy.modifiedNodesDesc"),onselect:function(s) { if(s){changeDeploymentType("nodes")}}}
-                  ]
-              });
-
-              //Matheus Webler edit
-              $('<li>'+
-              '<a id="btn-generate" class="deploy-button disabled" href="#">'+
-                '<span class="deploy-button-content">'+
-                 '<img id="btn-deploy-icon" src="red/images/deploy-full-o.png"> '+
-                 '<span>'+RED._("deploy.generate")+'</span>'+
-                '</span>'+
-              '</a>'+
-              '</li>').prependTo(".header-toolbar");
-        } else if (type == "simple") {
-            var label = options.label || RED._("deploy.deploy");
-            var icon = 'red/images/deploy-full-o.png';
-            if (options.hasOwnProperty('icon')) {
-                icon = options.icon;
-            }
-
-            $('<li><span class="deploy-button-group button-group">'+
-              '<a id="btn-deploy" class="deploy-button disabled" href="#">'+
-                '<span class="deploy-button-content">'+
-                  (icon?'<img id="btn-deploy-icon" src="'+icon+'"> ':'')+
-                  '<span>'+label+'</span>'+
-                '</span>'+
-                '<span class="deploy-button-spinner hide">'+
-                 '<img src="red/images/spin.svg"/>'+
-                '</span>'+
-              '</a>'+
-              '</span></li>').prependTo(".header-toolbar");
+        var label = 'Save';
+        var icon = 'red/images/deploy-full-o.png';
+        if (options.hasOwnProperty('icon')) {
+            icon = options.icon;
         }
+
+        $('<li><span class="deploy-button-group button-group">'+
+            '<a id="btn-deploy" class="deploy-button disabled" href="#">'+
+            '<span class="deploy-button-content">'+
+                '<i class="fa fa-save"></i> '+
+                '<span>'+label+'</span>'+
+            '</span>'+
+            '<span class="deploy-button-spinner hide">'+
+                '<img src="red/images/spin.svg"/>'+
+            '</span>'+
+            '</a>'+
+            '</span></li>').prependTo(".header-toolbar");
+
+        //Matheus Webler edit
+        $('<li><span class="deploy-button-group button-group">'+
+        '<a id="btn-generate" class="deploy-button" href="#">'+
+        '<span class="deploy-button-content">'+
+            '<img id="btn-deploy-icon" src="red/images/deploy-full-o.png"> '+
+            '<span>'+RED._("deploy.generate")+'</span>'+
+        '</span>'+
+        '</a>'+
+        '</span></li>').prependTo(".header-toolbar");
 
         $('#btn-deploy').click(function() { save(); });
 

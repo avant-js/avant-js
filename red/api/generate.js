@@ -14,8 +14,6 @@
  * limitations under the License.
  **/
 
-const Mustache = require('mustache');
-
 var yeoman = require('yeoman-environment');
 var env = yeoman.createEnv();
 
@@ -275,12 +273,9 @@ module.exports = {
             server.routes.push(route); 
         });
 
-        var app = {
-            server: server,
-            database: database
-        }
-
-
+        var app = {}
+        app.server = server;
+        app.database = database;        
 
         //console.log(require('util').inspect(app, {showHidden: false, depth: null}));
 
