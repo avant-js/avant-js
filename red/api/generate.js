@@ -280,7 +280,7 @@ module.exports = {
         //console.log(require('util').inspect(app, {showHidden: false, depth: null}));
 
         env.lookup(function () {
-            env.run('avantjs', {'app': app}, function (err) {
+            env.run('avantjs', {'app': app, 'force': true}, function (err) {
                 console.log('done');
             });
         }); 
