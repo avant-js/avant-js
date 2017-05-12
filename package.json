@@ -8,9 +8,9 @@
     "type": "git",
     "url": "https://github.com/node-red/node-red.git"
   },
-  "main": "red.js",
+  "main": "main.js",
   "scripts": {
-    "start": "node red.js",
+    "start": "electron main.js",
     "test": "grunt",
     "build": "grunt build"
   },
@@ -75,6 +75,7 @@
     "swagger-ui": "2.1.4",
     "uglify-js": "2.7.5",
     "when": "3.7.7",
+    "winston": "^2.3.1",
     "ws": "1.1.1",
     "xml2js": "0.4.17",
     "yeoman-environment": "^1.6.6"
@@ -83,6 +84,8 @@
     "bcrypt": "~1.0.1"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.19.0",
     "grunt": "~1.0.1",
     "grunt-chmod": "~1.1.1",
     "grunt-cli": "~1.2.0",
@@ -98,7 +101,7 @@
     "grunt-nodemon": "~0.4.2",
     "grunt-sass": "~1.2.1",
     "grunt-simple-mocha": "~0.4.1",
-    "mocha": "~3.2.0",
+    "mocha": "^3.3.0",
     "should": "^8.4.0",
     "sinon": "1.17.7",
     "supertest": "2.0.1"
