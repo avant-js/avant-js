@@ -32,6 +32,8 @@ var app = express();
 var settingsFile;
 var flowFile;
 
+var callback = function(){};
+
 var knownOpts = {
     "help": Boolean,
     "port": Number,
@@ -164,7 +166,7 @@ if (settings.httpNodeRoot !== false) {
     settings.httpNodeAuth = settings.httpNodeAuth || settings.httpAuth;
 }
 
-settings.uiPort = parsedArgs.port||settings.uiPort||1880;
+settings.uiPort = parsedArgs.port||settings.uiPort||1881;
 settings.uiHost = settings.uiHost||"0.0.0.0";
 
 if (flowFile) {
@@ -291,6 +293,7 @@ RED.start().then(function() {
             }
             process.title = parsedArgs.title || 'node-red';
             RED.log.info(RED.log._("server.now-running", {listenpath:getListenPath()}));
+            callback();
         });
     } else {
         RED.log.info(RED.log._("server.headless-mode"));
@@ -321,54 +324,6 @@ process.on('SIGINT', function () {
     process.exit();
 });
 
-/*
-const electron = require('electron');
-// Module to control application life.
-const eapp = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
-//const {eapp, BrowserWindow} = require('electron')
-const url = require('url')
-
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win
-
-function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600})
-
-  setTimeout(function() {win.loadURL('http://127.0.0.1:1880/')}, 5000);
-
-
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your eapp supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null
-  })
+module.exports = function(cb){
+    callback = cb;
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-eapp.on('ready', createWindow)
-
-// Quit when all windows are closed.
-eapp.on('window-all-closed', () => {
-  // On macOS it is common for eapplications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    eapp.quit()
-  }
-})
-
-eapp.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
-  }
-})
-*/
