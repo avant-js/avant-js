@@ -18,33 +18,8 @@ RED.deploy = (function() {
 
     //Matheus Webler edit
     function generateCode(){
-        var nns = RED.nodes.createCompleteNodeSet();
         save(true, true);
-        $( "#node-dialog-confirm-deploy" ).dialog( "open" );
-        return;
-        
-        $.ajax({
-            url:"http-api/swagger.json",
-            type: "GET",
-            success: function(data) {
-                var swaggerDoc = data;
-                var app = {
-                    flows:nns,
-                    swagger: swaggerDoc
-                }
-                console.log(swaggerDoc)
-                $.ajax({
-                    url:"generate",
-                    type: "POST",
-                    data: JSON.stringify(app),
-                    contentType: "application/json; charset=utf-8",
-                    headers: {
-                        "Node-RED-Deployment-Type":deploymentType
-                    }
-                });
-            },
-            contentType: "application/json; charset=utf-8",
-        });
+        $( "#node-dialog-confirm-deploy" ).dialog( "open" );        
     }
 
     var deploymentTypes = {
@@ -132,12 +107,48 @@ RED.deploy = (function() {
                         text: RED._("deploy.confirm.button.confirm"),
                         class: "primary",
                         click: function() {
+                            var dialog = $( this );
                             $( "#node-dialog-confirm-deploy-loading" ).show();
                             $( "#node-dialog-confirm-deploy-config").hide();
                             $("node-dialog-confirm-deploy-deploy" ).addClass("disabled");
-                            //$( "#node-dialog-confirm-deploy " ).show();
-                            
-                            //$( this ).dialog( "close" );
+                            var nns = RED.nodes.createCompleteNodeSet();
+                            $.ajax({
+                                url:"http-api/swagger.json",
+                                type: "GET",
+                                success: function(data) {
+                                    var swaggerDoc = data;
+                                    var app = {
+                                        flows:nns,
+                                        swagger: swaggerDoc
+                                    }
+                                    
+                                    $.ajax({
+                                        url:"generate",
+                                        type: "POST",
+                                        data: JSON.stringify(app),
+                                        contentType: "application/json; charset=utf-8",
+                                        headers: {
+                                            "Node-RED-Deployment-Type":deploymentType
+                                        },
+                                        success: function(data){
+                                            $( "#node-dialog-confirm-deploy-loading" ).hide();
+                                            $( "#node-dialog-confirm-deploy-config").show();
+                                            $("node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
+                                            dialog.dialog( "close" );
+                                            alert("Application created!");
+                                        },
+                                        error: function(err){
+                                            $( "#node-dialog-confirm-deploy-loading" ).hide();
+                                            $( "#node-dialog-confirm-deploy-config").show();
+                                            $("node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
+                                            dialog.dialog( "close" );
+                                            alert("Error creating the application!");
+                                        }
+                                    });
+                                },
+                                contentType: "application/json; charset=utf-8",
+                            });
+                            //
                         }
                     }
                 ],
@@ -145,7 +156,10 @@ RED.deploy = (function() {
 
                 },
                 open: function() {
-                    $("#node-dialog-confirm-deploy-deploy").show();                    
+                    $("#node-dialog-confirm-deploy-deploy").show();
+                    $( "#node-dialog-confirm-deploy-loading" ).hide();
+                    $( "#node-dialog-confirm-deploy-config").show();
+                    $("node-dialog-confirm-deploy-deploy" ).removeClass("disabled");     
                 }
         });
 

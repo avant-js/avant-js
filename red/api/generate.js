@@ -15,7 +15,6 @@
  **/
 
 var yeoman = require('yeoman-environment');
-var env = yeoman.createEnv();
 
 // Here we register a generator based on its path. Providing the namespace
 // is optional.
@@ -278,12 +277,16 @@ module.exports = {
         app.database = database;        
 
         //console.log(require('util').inspect(app, {showHidden: false, depth: null}));
-
-        env.lookup(function () {
-            env.run('avantjs', {'app': app, 'force': true}, function (err) {
-                console.log('done');
+        try{
+            var env = yeoman.createEnv();
+            env.lookup(function () {
+                env.run('avantjs', {'app': app, 'force': true}, function (err) {
+                    res.sendStatus(200);
+                });
             });
-        }); 
+        } catch(err){
+            res.sendStatus(500).json({error: err});
+        } 
 
     }
 }
