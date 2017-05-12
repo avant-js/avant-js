@@ -65,9 +65,6 @@ RED.deploy = (function() {
                 '<i class="fa fa-save"></i> '+
                 '<span>'+label+'</span>'+
             '</span>'+
-            '<span class="deploy-button-spinner hide">'+
-                '<img src="red/images/spin.svg"/>'+
-            '</span>'+
             '</a>'+
             '</span></li>').prependTo(".header-toolbar");
 
@@ -110,7 +107,7 @@ RED.deploy = (function() {
                             var dialog = $( this );
                             $( "#node-dialog-confirm-deploy-loading" ).show();
                             $( "#node-dialog-confirm-deploy-config").hide();
-                            $("node-dialog-confirm-deploy-deploy" ).addClass("disabled");
+                            $("#node-dialog-confirm-deploy-deploy" ).addClass("disabled");
                             var nns = RED.nodes.createCompleteNodeSet();
                             $.ajax({
                                 url:"http-api/swagger.json",
@@ -133,14 +130,14 @@ RED.deploy = (function() {
                                         success: function(data){
                                             $( "#node-dialog-confirm-deploy-loading" ).hide();
                                             $( "#node-dialog-confirm-deploy-config").show();
-                                            $("node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
+                                            $("#node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
                                             dialog.dialog( "close" );
                                             alert("Application created!");
                                         },
                                         error: function(err){
                                             $( "#node-dialog-confirm-deploy-loading" ).hide();
                                             $( "#node-dialog-confirm-deploy-config").show();
-                                            $("node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
+                                            $("#node-dialog-confirm-deploy-deploy" ).removeClass("disabled");
                                             dialog.dialog( "close" );
                                             alert("Error creating the application!");
                                         }
@@ -220,14 +217,14 @@ RED.deploy = (function() {
     }
 
     function save(skipValidation,force) {
+        skipValidation = true;
+        force = true;
         if (!$("#btn-deploy").hasClass("disabled")) {
 
             var nns = RED.nodes.createCompleteNodeSet();
 
             var startTime = Date.now();
-            $(".deploy-button-content").css('opacity',0);
-            $(".deploy-button-spinner").show();
-            $("#btn-deploy").addClass("disabled");
+
 
             var data = {flows:nns};
 
@@ -278,7 +275,6 @@ RED.deploy = (function() {
                 RED.events.emit("deploy");
             }).fail(function(xhr,textStatus,err) {
                 RED.nodes.dirty(true);
-                $("#btn-deploy").removeClass("disabled");
                 if (xhr.status === 401) {
                     RED.notify(RED._("deploy.deployFailed",{message:RED._("user.notAuthorized")}),"error");
                 } else if (xhr.status === 409) {
@@ -291,8 +287,6 @@ RED.deploy = (function() {
             }).always(function() {
                 var delta = Math.max(0,300-(Date.now()-startTime));
                 setTimeout(function() {
-                    $(".deploy-button-content").css('opacity',1);
-                    $(".deploy-button-spinner").hide();
                 },delta);
             });
         }

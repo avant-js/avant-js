@@ -91,7 +91,7 @@
         <div id="node-dialog-confirm-deploy-loading" class="node-dialog-confirm-row" hidden>
             <div class="loading">
                 <div class="spinner-wrapper">
-                    <span class="spinner-text">GENERATING</span>
+                    <span class="spinner-text">GENERATING...<br>BE PATIENT, THIS MAY TAKE A WHILE</span>
                     <span class="spinner"></span>
                 </div>
             </div>
