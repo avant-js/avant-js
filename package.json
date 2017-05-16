@@ -12,7 +12,8 @@
   "scripts": {
     "start": "electron main.js",
     "test": "grunt",
-    "build": "grunt build"
+    "build": "grunt build",
+    "package": "grunt build && electron-packager . AvantJS --icon=nodered.icns --all --out=dist --electron-version=1.6.7"
   },
   "bin": {
     "node-red": "./red.js",
@@ -85,6 +86,8 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "electron": "^1.6.7",
+    "electron-packager": "^8.7.0",
     "eslint": "^3.19.0",
     "grunt": "~1.0.1",
     "grunt-chmod": "~1.1.1",
