@@ -13,7 +13,7 @@
     "start": "electron main.js",
     "test": "grunt",
     "build": "grunt build",
-    "package": "grunt build && electron-packager . AvantJS --icon=nodered.icns --all --out=dist --electron-version=1.6.7"
+    "package": "grunt build && electron-packager . AvantJS --icon=nodered.icns --all --out=dist --electron-version=1.6.7 --overwrite"
   },
   "bin": {
     "node-red": "./red.js",
