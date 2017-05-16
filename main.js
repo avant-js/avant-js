@@ -37,7 +37,7 @@ eapp.on('window-all-closed', () => {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     eapp.quit();
-    RED.stop();
+    //RED.stop();
     // TODO: need to allow nodes to close asynchronously before terminating the
     // process - ie, promises
     process.exit();
