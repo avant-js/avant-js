@@ -141,23 +141,6 @@ function scanTreeForNodesModules(moduleName) {
     var results = [];
     var userDir;
 
-    if (settings.userDir) {
-        userDir = path.join(settings.userDir,"node_modules");
-        results = scanDirForNodesModules(userDir,moduleName);
-        results.forEach(function(r) { r.local = true; });
-    }
-
-    if (dir) {
-        var up = path.resolve(path.join(dir,".."));
-        while (up !== dir) {
-            var pm = path.join(dir,"node_modules");
-            if (pm != userDir) {
-                results = results.concat(scanDirForNodesModules(pm,moduleName));
-            }
-            dir = up;
-            up = path.resolve(path.join(dir,".."));
-        }
-    }
     return results;
 }
 
@@ -209,20 +192,6 @@ function getNodeFiles(disableNodePathScan) {
         nodeFiles = getLocalNodeFiles(path.resolve(settings.coreNodesDir));
         var defaultLocalesPath = path.join(settings.coreNodesDir,"core","locales");
         i18n.registerMessageCatalog("node-red",defaultLocalesPath,"messages.json");
-    }
-
-    if (settings.userDir) {
-        dir = path.join(settings.userDir,"nodes");
-        nodeFiles = nodeFiles.concat(getLocalNodeFiles(dir));
-    }
-    if (settings.nodesDir) {
-        dir = settings.nodesDir;
-        if (typeof settings.nodesDir == "string") {
-            dir = [dir];
-        }
-        for (var i=0;i<dir.length;i++) {
-            nodeFiles = nodeFiles.concat(getLocalNodeFiles(dir[i]));
-        }
     }
 
     var nodeList = {
