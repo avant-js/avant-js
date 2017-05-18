@@ -1,12 +1,12 @@
 {
   "name": "avant-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A visual tool for bootstrapping the development of NodeJS applications",
   "homepage": "https://github.com/avant-js",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/avant-js/node-red.git"
+    "url": "https://github.com/avant-js/avant-js.git"
   },
   "main": "red.js",
   "scripts": {
@@ -15,16 +15,9 @@
     "build": "grunt build"
   },
   "bin": {
-    "node-red": "./red.js",
-    "node-red-pi": "bin/node-red-pi"
+    "avant-js": "./red.js"
   },
   "contributors": [
-    {
-      "name": "Nick O'Leary"
-    },
-    {
-      "name": "Dave Conway-Jones"
-    },
     {
       "name": "Matheus Webler"
     }
