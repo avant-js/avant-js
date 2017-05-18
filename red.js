@@ -32,8 +32,6 @@ var app = express();
 var settingsFile;
 var flowFile;
 
-var callback = function(){};
-
 var knownOpts = {
     "help": Boolean,
     "port": Number,
@@ -293,7 +291,6 @@ RED.start().then(function() {
             }
             process.title = parsedArgs.title || 'node-red';
             RED.log.info(RED.log._("server.now-running", {listenpath:getListenPath()}));
-            callback();
         });
     } else {
         RED.log.info(RED.log._("server.headless-mode"));
@@ -323,7 +320,3 @@ process.on('SIGINT', function () {
     // process - ie, promises
     process.exit();
 });
-
-module.exports = function(cb){
-    callback = cb;
-}

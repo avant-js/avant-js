@@ -1,19 +1,18 @@
 {
-  "name": "node-red",
-  "version": "0.16.2",
-  "description": "A visual tool for wiring the Internet of Things",
-  "homepage": "http://nodered.org",
+  "name": "avant-js",
+  "version": "0.0.1",
+  "description": "A visual tool for bootstrapping the development of NodeJS applications",
+  "homepage": "https://github.com/avant-js",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red/node-red.git"
+    "url": "https://github.com/avant-js/node-red.git"
   },
-  "main": "main.js",
+  "main": "red.js",
   "scripts": {
-    "start": "electron main.js",
+    "start": "node red.js",
     "test": "grunt",
-    "build": "grunt build",
-    "package": "grunt build && electron-packager . AvantJS --icon=nodered.icns --all --out=dist --electron-version=1.6.7 --overwrite"
+    "build": "grunt build"
   },
   "bin": {
     "node-red": "./red.js",
@@ -32,10 +31,10 @@
   ],
   "keywords": [
     "editor",
-    "messaging",
-    "iot",
     "flow",
-    "api"
+    "api",
+    "rest",
+    "generator"
   ],
   "dependencies": {
     "basic-auth": "1.1.0",
@@ -86,8 +85,6 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "electron": "^1.6.7",
-    "electron-packager": "^8.7.0",
     "eslint": "^3.19.0",
     "grunt": "~1.0.1",
     "grunt-chmod": "~1.1.1",
