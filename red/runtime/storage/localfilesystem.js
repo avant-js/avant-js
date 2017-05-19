@@ -180,7 +180,7 @@ var localfilesystem = {
                 fs.statSync(fspath.join(process.env.NODE_RED_HOME,".config.json"));
                 settings.userDir = process.env.NODE_RED_HOME;
             } catch(err) {
-                settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME,".node-red");
+                settings.userDir = fspath.join(process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE || process.env.NODE_RED_HOME,".avant-js");
                 if (!settings.readOnly) {
                     promises.push(promiseDir(fspath.join(settings.userDir,"node_modules")));
                 }

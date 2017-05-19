@@ -65,7 +65,7 @@ describe('LocalFileSystem', function() {
         });
     });
 
-    it('should set userDir to HOME/.node-red',function(done) {
+    it('should set userDir to HOME/.avant-js',function(done) {
         var oldNRH = process.env.NODE_RED_HOME;
         process.env.NODE_RED_HOME = path.join(userDir,"NRH");
         var oldHOME = process.env.HOME;
@@ -75,9 +75,9 @@ describe('LocalFileSystem', function() {
         var settings = {};
         localfilesystem.init(settings).then(function() {
             try {
-                fs.existsSync(path.join(process.env.HOME,".node-red","lib")).should.be.true();
-                fs.existsSync(path.join(process.env.HOME,".node-red","lib",'flows')).should.be.true();
-                settings.userDir.should.equal(path.join(process.env.HOME,".node-red"));
+                fs.existsSync(path.join(process.env.HOME,".avant-js","lib")).should.be.true();
+                fs.existsSync(path.join(process.env.HOME,".avant-js","lib",'flows')).should.be.true();
+                settings.userDir.should.equal(path.join(process.env.HOME,".avant-js"));
                 done();
             } catch(err) {
                 done(err);
