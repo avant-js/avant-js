@@ -1,19 +1,26 @@
 # AvantJS
 
-A visual tool for bootstrapping NodeJS applications based on [Node-RED](http://nodered.org/).
+A visual tool for bootstrapping NodeJS applications, based on [Node-RED](http://nodered.org/).
 
 ![AvantJS flows](https://github.com/avant-js/docs/raw/master/screenshots/sample-flow.PNG)
 
 ## Quick Start
 
+1. `npm install -g avant-js`
+2. `avant-js`
+3. Open <http://localhost:1880>
+
+
+## Developers
+
 If you want to run the latest code from git, here's how to get started:
 
 1. Clone the code:
 
-        git clone https://github.com/avant-js/node-red.git
-        cd node-red
+        git clone https://github.com/avant-js/avant-js.git
+        cd avant-js
 
-2. Install the node-red dependencies
+2. Install the avant-js dependencies
 
         npm install
 
