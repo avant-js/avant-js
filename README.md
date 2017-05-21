@@ -9,7 +9,7 @@ A visual tool for bootstrapping NodeJS applications, based on [Node-RED](http://
 1. `npm install -g avant-js`
 2. `avant-js`
 3. Open <http://localhost:1880>
-
+4. To generate the code click on Generate button in the top toolbar. A new folder `generatedcode` will be created inside current folder with your app code.
 
 ## Developers
 

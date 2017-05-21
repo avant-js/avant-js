@@ -209,7 +209,7 @@ module.exports = {
         "template": {
             "swagger": "2.0",
             "info": {
-            "title": "My Node-RED API",
+            "title": "My AvantJS API",
             "version": "0.0.1"
             }
         }

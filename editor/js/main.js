@@ -228,6 +228,10 @@
             label: RED.settings.theme("menu.menu-item-help.label","Node-RED website"),
             href: RED.settings.theme("menu.menu-item-help.url","http://nodered.org/docs")
         });
+        menuOptions.push({id:"menu-item-help",
+            label: RED.settings.theme("menu.menu-item-help.label","AvantJS website"),
+            href: RED.settings.theme("menu.menu-item-help.url","http://github.com/avant-js/avant-js")
+        });
         menuOptions.push({id:"menu-item-node-red-version", label:"v"+RED.settings.version, onselect: "core:show-about" });
 
 
