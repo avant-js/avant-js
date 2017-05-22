@@ -13,6 +13,8 @@ module.exports = function(RED) {
         }
     });
 
+    RED.nodes.registerType("collection",MongoNode,{});
+
     RED.nodes.registerType("mongodb out",function(){});
 
     RED.nodes.registerType("mongodb in",function(){});

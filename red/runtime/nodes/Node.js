@@ -84,18 +84,20 @@ Node.prototype.on = function(event, callback) {
 Node.prototype.close = function() {
     var promises = [];
     var node = this;
-    for (var i=0;i<this._closeCallbacks.length;i++) {
-        var callback = this._closeCallbacks[i];
-        if (callback.length == 1) {
-            promises.push(
-                when.promise(function(resolve) {
-                    callback.call(node, function() {
-                        resolve();
-                    });
-                })
-            );
-        } else {
-            callback.call(node);
+    if(this._closeCallbacks){
+        for (var i=0;i<this._closeCallbacks.length;i++) {
+            var callback = this._closeCallbacks[i];
+            if (callback.length == 1) {
+                promises.push(
+                    when.promise(function(resolve) {
+                        callback.call(node, function() {
+                            resolve();
+                        });
+                    })
+                );
+            } else {
+                callback.call(node);
+            }
         }
     }
     if (promises.length > 0) {

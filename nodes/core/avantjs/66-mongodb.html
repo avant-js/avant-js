@@ -118,7 +118,7 @@
                     properties.each(function(i) { $(this).find(".node-input-modeldata-index").html(i+1); });
                 }
             });
-            console.log(this.properties);
+
             for (var i=0;i<this.properties.length;i++) {
                 var property = this.properties[i];
                 $("#node-config-input-modeldata-container").editableList('addItem',{p:property,i:i});
@@ -185,7 +185,7 @@
 
     <div class="form-row">
         <label for="node-input-output"><i class="fa fa-arrow-left"></i> <span>Output</span></label>
-        <input type="text" id="node-input-output" readonly>
+        <input type="text" id="node-input-output">
     </div>
 </script>
 
@@ -237,15 +237,6 @@
             }
             else{
                 $(".node-input-query").show();
-            }
-
-            if (id === "count"){
-                $("#node-input-output").val("quantity");
-                $("#node-input-output").prop('readonly', false);
-            }
-            else{
-                $("#node-input-output").val("document");
-                $("#node-input-output").prop('readonly', false);
             }
         });
 
@@ -318,7 +309,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-output"><i class="fa fa-arrow-left"></i> <span>Output</span></label>
-        <input type="text" id="node-input-output" readonly>
+        <input type="text" id="node-input-output">
     </div>
 </script>
 

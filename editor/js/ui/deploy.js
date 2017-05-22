@@ -244,13 +244,8 @@ RED.deploy = (function() {
                 RED.nodes.dirty(false);
                 RED.nodes.version(data.rev);
                 RED.nodes.originalFlow(nns);
-                if (hasUnusedConfig) {
-                    RED.notify(
-                    '<p>'+RED._("deploy.successfulDeploy")+'</p>'+
-                    '<p>'+RED._("deploy.unusedConfigNodes")+' <a href="#" onclick="RED.sidebar.config.show(true); return false;">'+RED._("deploy.unusedConfigNodesLink")+'</a></p>',"success",false,6000);
-                } else {
-                    RED.notify(RED._("deploy.successfulDeploy"),"success");
-                }
+
+                RED.notify(RED._("deploy.successfulDeploy"),"success");
                 RED.nodes.eachNode(function(node) {
                     if (node.changed) {
                         node.dirty = true;
