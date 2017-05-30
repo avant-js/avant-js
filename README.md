@@ -41,14 +41,13 @@ If you want to run the latest code from git, here's how to get started:
 
 ## Authors
 
-Node-RED is a project of the [JS Foundation](http://js.foundation).
+AvantJS is a project created by Matheus Webler [@mwebler](http://github.com/mwebler) for the thesis in Computer Science.
 
+Node-RED is a project of the [JS Foundation](http://js.foundation).
 It was created by [IBM Emerging Technology](https://www.ibm.com/blogs/emerging-technology/).
 
 * Nick O'Leary [@knolleary](http://twitter.com/knolleary)
 * Dave Conway-Jones [@ceejay](http://twitter.com/ceejay)
-
-AvantJS is a project created by Matheus Webler [@mwebler](http://github.com/mwebler) for the thesis in Computer Science.
 
 
 ## Copyright and license
