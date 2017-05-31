@@ -1,6 +1,6 @@
 {
   "name": "avant-js",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A visual tool for bootstrapping the development of NodeJS applications",
   "homepage": "https://github.com/avant-js",
   "license": "Apache-2.0",
